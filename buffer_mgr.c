@@ -5,7 +5,8 @@
 #include<math.h>
 
 // Create the structure for storing the buffer parameters
-typedef struct Buffer_para {
+typedef struct Buffer_para 
+{
 	// Stores the information about the page & data field points to the content 
 	SM_PageHandle data; 
 	PageNumber pageNum;
@@ -33,7 +34,6 @@ int hit = 0;
 /* Initialise the buffer pool objects with parameter values */
 RC initBufferPool(BM_BufferPool *const bm, const char *const pageFileName,const int numPages, ReplacementStrategy strategy,void *stratData)
 {
-	//printf("Buffer Pool Initializing .... ");
 	//Memory Allocation
 	bpara = malloc(sizeof(Buffer_para)*numPages); 
 	buffer_page_size =numPages;
@@ -65,7 +65,8 @@ RC initBufferPool(BM_BufferPool *const bm, const char *const pageFileName,const 
 }
 
 /*Forcing values to shutdown the values in buffer pool*/
-RC shutdownBufferPool(BM_BufferPool *const bm){
+RC shutdownBufferPool(BM_BufferPool *const bm)
+{
 	//printf("Shut down...");
 	if(bm->numPages<0)
 	return RC_INVALID_BUFFER;
@@ -97,21 +98,15 @@ RC shutdownBufferPool(BM_BufferPool *const bm){
 	free(bpara);
 	bm->mgmtData = NULL;
 
-	//if(flag == 1)
-	//return RC_BUFFER_HAS_DIRTY_DATA;
-	// else
-
         if(flag)
 	return RC_OK;
 }
 
 /*Forcing the buffer pool contents*/
-RC forceFlushPool(BM_BufferPool *const bm){
-	//printf("Force flush...");
-		
+RC forceFlushPool(BM_BufferPool *const bm)
+{	
 	if(bm->numPages<0)
 	return RC_INVALID_BUFFER;
-	//return RC_FILE_NOT_FOUND;
 
 	int i=0;
 	
@@ -132,14 +127,12 @@ RC forceFlushPool(BM_BufferPool *const bm){
 		i++;
 	}
 
-	//closePageFile(&fh);
-	//return RC_FILE_PRESENT;
-
 	return RC_OK;
 }
 
 /* Check if buffer manager & Page Handle's pagenum is the same */
-RC markDirty (BM_BufferPool *const bm, BM_PageHandle *const page){
+RC markDirty (BM_BufferPool *const bm, BM_PageHandle *const page)
+{
 	//printf("Mark Dirty...");
 	if(bm->numPages<0)
 	return RC_INVALID_BUFFER;
@@ -158,16 +151,13 @@ RC markDirty (BM_BufferPool *const bm, BM_PageHandle *const page){
 			return RC_OK;  
 		}     
 	}   
-	// return RC_ERROR;
-	//if(flag == 1)
-	//return RC_OK;
-	//else
 	if(!flag)
 	return RC_BUFFER_NO_DIRTY;
 }
 
 /* Check if buffer manager & Page Handle's pagenum is the same & decrements the value of fixcount */
-RC unpinPage (BM_BufferPool *const bm, BM_PageHandle *const page){
+RC unpinPage (BM_BufferPool *const bm, BM_PageHandle *const page)
+{
 	//printf("unpin page...");
 	if(bm->numPages<0)
 	return RC_INVALID_BUFFER;
@@ -195,7 +185,8 @@ RC unpinPage (BM_BufferPool *const bm, BM_PageHandle *const page){
 }
 
 /* writes the modified contents and sets the dirty page */
-RC forcePage (BM_BufferPool *const bm, BM_PageHandle *const page){
+RC forcePage (BM_BufferPool *const bm, BM_PageHandle *const page)
+{
 	//printf("force page...");	
 	if(bm->mgmtData == NULL)
 	return RC_NO_BUFFER_DATA;
@@ -226,22 +217,13 @@ RC forcePage (BM_BufferPool *const bm, BM_PageHandle *const page){
 	}
 
 	return RC_OK;
-	//else
-	//  return RC_DIRTY_BIT_NOT_CLEARED;
 }
 
 /* Implements the First In First Out Replacement Strategy using Queue Data Structure */
-void FIFO(BM_BufferPool *const bm, Buffer_para *node){
-	//printf("FIFO...");
+void FIFO(BM_BufferPool *const bm, Buffer_para *node)
+{
 	int i=0;
 	int j = latter%buffer_page_size;
-	/*
-	if(bm->mgmtData == NULL)
-	return RC_NO_BUFFER_DATA;
-
-	if(bm->numPages<=0)
-	return RC_INVALID_BUFFER;*/
-
 	bpara = (Buffer_para *) bm->mgmtData;
 
 	while(i<buffer_page_size) 
@@ -274,9 +256,8 @@ void FIFO(BM_BufferPool *const bm, Buffer_para *node){
 	}
 }
 
-RC pinpageFIFO(BM_BufferPool *const bm, BM_PageHandle *const page, const PageNumber pageNum){
-	//printf("Pin page FIFO...");
-
+RC pinpageFIFO(BM_BufferPool *const bm, BM_PageHandle *const page, const PageNumber pageNum)
+{
 	if(bm->mgmtData == NULL)
 	return RC_NO_BUFFER_DATA;
 
@@ -384,14 +365,6 @@ RC pinpageFIFO(BM_BufferPool *const bm, BM_PageHandle *const page, const PageNum
 /* Implementation of Least Recently Used algorithm with the help of Stack Data Structure*/
 void LRU(BM_BufferPool *const bm, Buffer_para *node)
 {
-	//printf("LRU...");
-	/*
-	if(bm->mgmtData == NULL)
-	return RC_NO_BUFFER_DATA;
-
-	if(bm->numPages<=0)
-	return RC_INVALID_BUFFER;*/
-
 	bpara=(Buffer_para *) bm->mgmtData;
 	int i=0;
 	int j; //points to the previous element
@@ -436,9 +409,9 @@ void LRU(BM_BufferPool *const bm, Buffer_para *node)
 	bpara[j].lf = node->lf;
 }
 
-RC pinpageLRU(BM_BufferPool *const bm, BM_PageHandle *const page, const PageNumber pageNum){
-   //printf("Pin page LRU....");
-  if(bm->mgmtData == NULL)
+RC pinpageLRU(BM_BufferPool *const bm, BM_PageHandle *const page, const PageNumber pageNum)
+{
+        if(bm->mgmtData == NULL)
 	return RC_NO_BUFFER_DATA;
 
 	if(bm->numPages<=0)
@@ -539,19 +512,13 @@ RC pinpageLRU(BM_BufferPool *const bm, BM_PageHandle *const page, const PageNumb
 }
 
 /* Implements the Least Frequently Used with the help of Stack Structure*/
-void LFU(BM_BufferPool *const bm, Buffer_para *node){
+void LFU(BM_BufferPool *const bm, Buffer_para *node)
+{
 	//printf("LFU...");
 	bpara=(Buffer_para *) bm->mgmtData;
 	int i=0;
 	int j;
 	int k;
-	
-	/*
-	if(bm->mgmtData == NULL)
-	return RC_NO_BUFFER_DATA;
-
-	if(bm->numPages<=0)
-	return RC_INVALID_BUFFER;*/
 
 	//computing and storing the least used element
 	while(i<buffer_page_size)
@@ -593,9 +560,9 @@ void LFU(BM_BufferPool *const bm, Buffer_para *node){
 	bpara[j].lr = node->lr;
 }
 
-RC pinpageLFU(BM_BufferPool *const bm, BM_PageHandle *const page, const PageNumber pageNum){
-   //printf("Pin page LFU....");
-  if(bm->mgmtData == NULL)
+RC pinpageLFU(BM_BufferPool *const bm, BM_PageHandle *const page, const PageNumber pageNum)
+{
+        if(bm->mgmtData == NULL)
 	return RC_NO_BUFFER_DATA;
 
 	if(bm->numPages<=0)
@@ -626,13 +593,13 @@ RC pinpageLFU(BM_BufferPool *const bm, BM_PageHandle *const page, const PageNumb
 
 		return RC_OK;
 	}		
-else
+        else
 	{	
-	int i=0;
-	int checksum = 0;
-	while(i<buffer_page_size)		
+	   int i=0;
+	   int checksum = 0;
+	   while(i<buffer_page_size)		
 	{
-	if(bpara[i].pageNum != -1)
+	   if(bpara[i].pageNum != -1)
 	{	
 		 if(bpara[i].pageNum == pageNum)  
 		 { 
@@ -691,7 +658,7 @@ else
 	    page->pageNum = pageNum;
 	    page->data = pin->data;			
 	    //Redirects to the FIFO function
-	       LFU(bm,pin);
+	    LFU(bm,pin);
 	} 
 	    return RC_OK;     
 
@@ -699,36 +666,37 @@ else
 	}
 
 /* Checks the page replacement stratgey and redirects to the respective strategy*/
-RC pinPage (BM_BufferPool *const bm, BM_PageHandle *const page, const PageNumber pageNum){
-	//printf("Pin page select...");
+RC pinPage (BM_BufferPool *const bm, BM_PageHandle *const page, const PageNumber pageNum)
+{
 	if(bm == NULL)
 	return RC_NO_BUFFER_DATA;
 	
 	//redirects to the pinpageFIFO	
-	if(bm->strategy == RS_FIFO){
+	if(bm->strategy == RS_FIFO)
+	{
 	return pinpageFIFO(bm, page,pageNum);
 	printf("In Fifo");
 	}
 
 	//redirects to the pinpageLRU
-	else if(bm->strategy == RS_LRU){
+	else if(bm->strategy == RS_LRU)
+	{
 	return pinpageLRU(bm, page,pageNum);
 	printf("In LRU");
 	}
 
 	//redirects to the pinpageLFU
-	else if(bm->strategy == RS_LFU){
+	else if(bm->strategy == RS_LFU)
+	{
 	return pinpageLFU(bm,page,pageNum);
 	printf("In LFU");
 	}
-	//return RC_OK;
-
-	//return RC_OK;
+	
 }
 
 /* Gets the Frame Contents & return array*/
-PageNumber *getFrameContents (BM_BufferPool *const bm){
-	// printf("Frame contentns...");
+PageNumber *getFrameContents (BM_BufferPool *const bm)
+{
 	PageNumber *return_page_number = malloc(sizeof(PageNumber)*buffer_page_size);
 	bpara= (Buffer_para *)bm->mgmtData;
 	int i=0;
@@ -739,12 +707,11 @@ PageNumber *getFrameContents (BM_BufferPool *const bm){
 	i++;
 	}
 	return return_page_number;
-	//return RC_OK;
 }
 
 /* checks the dirty bit is one or not*/
-bool *getDirtyFlags (BM_BufferPool *const bm){
-	//printf("Get Dirty pages...");
+bool *getDirtyFlags (BM_BufferPool *const bm)
+{
 	bool *dirtyflag = malloc(sizeof(bool)*buffer_page_size);
 
 	bpara= (Buffer_para *)bm->mgmtData;
@@ -761,8 +728,8 @@ bool *getDirtyFlags (BM_BufferPool *const bm){
 }
 
 /*Reads the pagenum into array and returns it*/
-int *getFixCounts (BM_BufferPool *const bm){
-	//printf("Get fix counts...");
+int *getFixCounts (BM_BufferPool *const bm)
+{
 	int *fixCount = malloc(sizeof(int)*buffer_page_size);
 
 	bpara= (Buffer_para *)bm->mgmtData;
@@ -776,15 +743,16 @@ int *getFixCounts (BM_BufferPool *const bm){
 }
 
 /*returns the page read*/
-int getNumReadIO (BM_BufferPool *const bm){
-	//printf("Get READ IO...");
+int getNumReadIO (BM_BufferPool *const bm)
+{
 	if(bm == NULL)
 	return 0;
 	return latter+1;
 }
 	
 /*returns the page written*/
-int getNumWriteIO (BM_BufferPool *const bm){ 
+int getNumWriteIO (BM_BufferPool *const bm)
+{ 
 	//printf("GETWRITE IO..."); 
 	if(bm == NULL)
 	return 0;
