@@ -67,14 +67,10 @@ RC initBufferPool(BM_BufferPool *const bm, const char *const pageFileName,const 
 /*Forcing values to shutdown the values in buffer pool*/
 RC shutdownBufferPool(BM_BufferPool *const bm)
 {
-	//printf("Shut down...");
 	if(bm->numPages<0)
 	return RC_INVALID_BUFFER;
 
 	bpara = (Buffer_para *)bm->mgmtData; 
-
-	// if(bm->numPages<0)
-	//return RC_INVALID_BUFFER;
 
 	int flag = 0;
 	//Invoking to force the values before shutting down
@@ -87,12 +83,9 @@ RC shutdownBufferPool(BM_BufferPool *const bm)
 	while(i<buffer_page_size)
         {
 		if(bpara[i].fixCount != 0)
-		//flag = 1;
-		//break;
 		return RC_BUFFER_HAS_DIRTY_DATA;
-
 		i++;
-		//return RC_BUFFER_HAS_DIRTY_DATA;
+		
 	}
 
 	free(bpara);
@@ -118,7 +111,6 @@ RC forceFlushPool(BM_BufferPool *const bm)
 			openPageFile(bm->pageFile,&fh);
 			//If fixCount is 0 write from bufferpool to disk			
 			writeBlock(bpara[i].pageNum, &fh , bpara[i].data);
-			//return RC_WRITE_NOT_SUCCESSFULL;
 
 			//Sets the dirty bits to 0
 			bpara[i].dirtypage = 0;
@@ -133,7 +125,7 @@ RC forceFlushPool(BM_BufferPool *const bm)
 /* Check if buffer manager & Page Handle's pagenum is the same */
 RC markDirty (BM_BufferPool *const bm, BM_PageHandle *const page)
 {
-	//printf("Mark Dirty...");
+	
 	if(bm->numPages<0)
 	return RC_INVALID_BUFFER;
 	
@@ -187,7 +179,7 @@ RC unpinPage (BM_BufferPool *const bm, BM_PageHandle *const page)
 /* writes the modified contents and sets the dirty page */
 RC forcePage (BM_BufferPool *const bm, BM_PageHandle *const page)
 {
-	//printf("force page...");	
+	
 	if(bm->mgmtData == NULL)
 	return RC_NO_BUFFER_DATA;
 
@@ -197,7 +189,7 @@ RC forcePage (BM_BufferPool *const bm, BM_PageHandle *const page)
 	if(openPageFile(bm->pageFile,&fh) != RC_OK)
 	return RC_FILE_NOT_FOUND;
 
-	// int flag =0;
+	
 	int i=0;
 
 	while(i<buffer_page_size)
@@ -210,7 +202,7 @@ RC forcePage (BM_BufferPool *const bm, BM_PageHandle *const page)
 			if((writeBlock(bpara[i].pageNum, &fh , bpara[i].data)!=RC_OK))
 			return RC_NOT_OK;
 			bpara[i].dirtypage = 0;
-			//flag = 1;
+			
 			w++; //page write results in write incrementation
 		}
 		i++;
@@ -514,7 +506,6 @@ RC pinpageLRU(BM_BufferPool *const bm, BM_PageHandle *const page, const PageNumb
 /* Implements the Least Frequently Used with the help of Stack Structure*/
 void LFU(BM_BufferPool *const bm, Buffer_para *node)
 {
-	//printf("LFU...");
 	bpara=(Buffer_para *) bm->mgmtData;
 	int i=0;
 	int j;
@@ -753,7 +744,6 @@ int getNumReadIO (BM_BufferPool *const bm)
 /*returns the page written*/
 int getNumWriteIO (BM_BufferPool *const bm)
 { 
-	//printf("GETWRITE IO..."); 
 	if(bm == NULL)
 	return 0;
 	return w;
